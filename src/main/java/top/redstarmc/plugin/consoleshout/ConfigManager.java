@@ -36,12 +36,17 @@ public class ConfigManager {
         return true;
     }
 
-    public String readConfigPrefix() throws FileNotFoundException {
+    public String readConfigPrefix(){
         File config_file_prefix = new File("./plugins/ConsoleShout/config.yml");
         if(!config_file_prefix.exists()){
             return null;
         }
-        InputStream inputStream = new FileInputStream(config_file_prefix);
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(config_file_prefix);
+        } catch (FileNotFoundException e) {
+            ConsoleShout.getConsoleshout().getLogger().error(e.getMessage());
+        }
         Yaml config_prefix = new Yaml();
         Map<String, Object> data = config_prefix.load(inputStream);
         return (String) data.get("prefix");

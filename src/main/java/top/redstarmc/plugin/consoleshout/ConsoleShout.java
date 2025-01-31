@@ -1,6 +1,7 @@
 package top.redstarmc.plugin.consoleshout;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.SimpleCommand;
@@ -8,10 +9,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
-import org.checkerframework.checker.units.qual.C;
 import org.slf4j.Logger;
-
-import java.io.FileNotFoundException;
 
 @Plugin(
         id = "console_shout",
@@ -41,7 +39,7 @@ public class ConsoleShout {
         logger.info("正在加载中…………………………");
         logger.info("生成配置文件");
         ConfigManager configManager = new ConfigManager();
-        configManager = this.configManager;
+        this.configManager = configManager;
         boolean bool = configManager.initConfig();
         if(!bool){
             logger.error("配置文件创建失败，插件停止加载");
@@ -59,12 +57,14 @@ public class ConsoleShout {
         SimpleCommand ConsoleShout_command = new ConsoleShoutCommand();
 
         CommandMeta alert_meta = commandManager.metaBuilder("alert").plugin(this).build();
-
+        BrigadierCommand alert_command = AlertCommand.createBrigadierCommand(server);
 
         CommandMeta alertraw_meta = commandManager.metaBuilder("alertraw").plugin(this).build();
-
+        BrigadierCommand alert_raw_command = AlertRawCommand.createAlertRawCommand(server);
 
         commandManager.register(console_shout,ConsoleShout_command);
+        commandManager.register(alert_meta,alert_command);
+        commandManager.register(alertraw_meta,alert_raw_command);
     }
 
     public Logger getLogger() {
@@ -77,5 +77,9 @@ public class ConsoleShout {
 
     public static ConsoleShout getConsoleshout() {
         return consoleshout;
+    }
+
+    public ConfigManager getConfigManager() {
+        return configManager;
     }
 }
